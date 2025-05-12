@@ -18,7 +18,11 @@ def display_app_title():
     """
     タイトル表示
     """
-    st.markdown(f"## {ct.APP_NAME}")
+    # st.markdown(f"## {ct.APP_NAME}")
+    st.markdown(
+        f"<h1 style='text-align: center; color: black;'>{ct.APP_NAME}</h1>",
+        unsafe_allow_html=True
+    )
 
 
 def display_select_mode():
@@ -30,6 +34,7 @@ def display_select_mode():
     # with col1:
     with st.sidebar:
         # 「label_visibility="collapsed"」とすることで、ラジオボタンを非表示にする
+        st.markdown("### 利用目的")
         st.session_state.mode = st.radio(
             label="",
             options=[ct.ANSWER_MODE_1, ct.ANSWER_MODE_2],
