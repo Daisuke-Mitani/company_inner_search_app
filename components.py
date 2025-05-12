@@ -26,8 +26,9 @@ def display_select_mode():
     回答モードのラジオボタンを表示
     """
     # 回答モードを選択する用のラジオボタンを表示
-    col1, col2 = st.columns([100, 1])
-    with col1:
+    # col1, col2 = st.columns([100, 1])
+    # with col1:
+    with st.sidebar:
         # 「label_visibility="collapsed"」とすることで、ラジオボタンを非表示にする
         st.session_state.mode = st.radio(
             label="",
@@ -42,7 +43,8 @@ def display_initial_ai_message():
     """
     with st.chat_message("assistant"):
         # 「st.success()」とすると緑枠で表示される
-        st.markdown("こんにちは。私は社内文書の情報をもとに回答する生成AIチャットボットです。上記で利用目的を選択し、画面下部のチャット欄からメッセージを送信してください。")
+        # st.markdown("こんにちは。私は社内文書の情報をもとに回答する生成AIチャットボットです。上記で利用目的を選択し、画面下部のチャット欄からメッセージを送信してください。")
+        st.markdown("こんにちは。私は社内文書の情報をもとに回答する生成AIチャットボットです。サイドバーで利用目的を選択し、画面下部のチャット欄からメッセージを送信してください。")
 
         # 「社内文書検索」の機能説明
         st.markdown("**【「社内文書検索」を選択した場合】**")
