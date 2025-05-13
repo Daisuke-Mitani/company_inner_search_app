@@ -128,14 +128,14 @@ if chat_message:
             # モードが「社内文書検索」の場合
             # ==========================================
             if st.session_state.mode == ct.ANSWER_MODE_1:
-                # 入力内容と関連性が高い社内文書のありかを表示
+                # 入力内容と関連性が高い社内文書のありかとページ番号を表示
                 content = cn.display_search_llm_response(llm_response)
 
             # ==========================================
             # モードが「社内問い合わせ」の場合
             # ==========================================
             elif st.session_state.mode == ct.ANSWER_MODE_2:
-                # 入力に対しての回答と、参照した文書のありかを表示
+                # 入力に対しての回答と、参照した文書のありかとページ番号を表示
                 content = cn.display_contact_llm_response(llm_response)
             
             # AIメッセージのログ出力

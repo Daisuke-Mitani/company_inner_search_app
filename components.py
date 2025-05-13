@@ -304,8 +304,10 @@ def display_contact_llm_response(llm_response):
             if "page" in document.metadata:
                 # ページ番号を取得
                 page_number = document.metadata["page"]
-                # 「ファイルパス」と「ページ番号」
-                file_info = f"{file_path}"
+                ### 「ファイルパス」と「ページ番号」
+                ###file_info = f"{file_path}"
+                # 「ファイルパス」と「ページ番号」を表示
+                file_info = f"{file_path} (ページNo.{page_number})"
             else:
                 # 「ファイルパス」のみ
                 file_info = f"{file_path}"
