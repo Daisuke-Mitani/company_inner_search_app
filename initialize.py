@@ -215,15 +215,7 @@ def file_load(path, docs_all):
 
     # 想定していたファイル形式の場合のみ読み込む
     if file_extension in ct.SUPPORTED_EXTENSIONS:
-        # # CSVファイルの場合、特別な処理を行う
-        # if file_extension == ".csv":
-        #     loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
-        #     docs = loader.load()
-        #     # 全行を統合して1つのドキュメントにする
-        #     combined_text = "\n".join([doc.page_content for doc in docs])
-        #     docs_all.append({"page_content": combined_text, "metadata": {"source": path}})
-        # else:
-        #     # その他のファイル形式は通常通り読み込む
+        # 読み込み対象のファイル形式に応じて、適切なローダーを選択
         loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
         docs = loader.load()
         docs_all.extend(docs)
