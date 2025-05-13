@@ -215,10 +215,45 @@ def file_load(path, docs_all):
 
     # 想定していたファイル形式の場合のみ読み込む
     if file_extension in ct.SUPPORTED_EXTENSIONS:
-        # 読み込み対象のファイル形式に応じて、適切なローダーを選択
-        loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
-        docs = loader.load()
-        docs_all.extend(docs)
+        # CSVファイルの場合、特別な処理を行う
+        if file_extension == ".csv":
+            # CSVファイルを読み込み
+            loader = CSVLoader(path, encoding="utf-8")
+            docs = loader.load()
+            
+            # CSVの内容を1つのテキストに統合
+            combined_text = ""
+            
+            # 人事部員の情報を抽出するための処理
+            hr_members = []
+            for doc in docs:
+                # CSVの各行のデータを取得
+                row_data = doc.page_content.strip()
+                metadata = doc.metadata
+                
+                # 行データをカンマで分割
+                data_parts = row_data.split(',')
+                
+                # 部署が「人事部」の場合、リストに追加
+                if len(data_parts) >= 3 and "人事部" in data_parts[2]:
+                    hr_members.append(row_data)
+            
+            # 人事部員の情報を整形して1つのテキストにまとめる
+            if hr_members:
+                combined_text = "人事部の従業員情報:\n" + "\n".join(hr_members)
+                
+                # 1つのドキュメントとして統合
+                from langchain.schema import Document
+                combined_doc = Document(
+                    page_content=combined_text,
+                    metadata={"source": path}
+                )
+                docs_all.append(combined_doc)
+        else:
+            # CSV以外のファイルは通常通り処理
+            loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
+            docs = loader.load()
+            docs_all.extend(docs)
 
 
 def adjust_string(s):
