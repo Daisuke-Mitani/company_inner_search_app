@@ -20,6 +20,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 import constants as ct
 from constants import CHUNK_SIZE, CHUNK_OVERLAP, SEARCH_K
+from langchain.schema import Document
 
 
 ############################################################
@@ -215,18 +216,35 @@ def file_load(path, docs_all):
 
     # 想定していたファイル形式の場合のみ読み込む
     if file_extension in ct.SUPPORTED_EXTENSIONS:
-        # # CSVファイルの場合、特別な処理を行う
-        # if file_extension == ".csv":
-        #     loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
-        #     docs = loader.load()
-        #     # 全行を統合して1つのドキュメントにする
-        #     combined_text = "\n".join([doc.page_content for doc in docs])
-        #     docs_all.append({"page_content": combined_text, "metadata": {"source": path}})
-        # else:
-        #     # その他のファイル形式は通常通り読み込む
-        loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
-        docs = loader.load()
-        docs_all.extend(docs)
+        # CSVファイルの場合、特別な処理を行う
+        if file_extension == ".csv":
+            loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
+            docs = loader.load()
+            
+            # CSVの場合は各行を独立したドキュメントとして扱う
+            # これにより部署などでの検索がより正確になる
+            for doc in docs:
+                # メタデータに元のファイルパスを含める
+                metadata = doc.metadata.copy()
+                metadata["source"] = path
+                
+                # 社員名簿CSVの場合、より効果的な検索のために部署情報をメタデータに追加
+                if "社員名簿" in path:
+                    content = doc.page_content
+                    content_parts = content.split(',')
+                    # CSVの列が十分にある場合（ヘッダー行とデータ行を区別）
+                    if len(content_parts) > 8:
+                        # 部署情報をメタデータに追加（9列目が部署の列）
+                        department = content_parts[8].strip('"') if content_parts[8] else "不明"
+                        metadata["department"] = department
+                
+                # 各行を別々のドキュメントとして追加
+                docs_all.append(Document(page_content=doc.page_content, metadata=metadata))
+        else:
+            # その他のファイル形式は通常通り読み込む
+            loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
+            docs = loader.load()
+            docs_all.extend(docs)
 
 
 def adjust_string(s):
